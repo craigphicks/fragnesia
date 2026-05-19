@@ -58,7 +58,8 @@ if command -v docker >/dev/null 2>&1; then
   cids="$(docker ps -q 2>/dev/null || true)"
   if [[ -n "${cids}" ]]; then
     inspect_lines="$(docker inspect --format '{{.Name}} privileged={{.HostConfig.Privileged}} cap_add={{.HostConfig.CapAdd}} security_opt={{.HostConfig.SecurityOpt}} apparmor={{.AppArmorProfile}}' ${cids} 2>/dev/null || true)"
-    weak_lines="$(printf '%s\n' "$inspect_lines" | egrep 'privileged=true|cap_add=\[[^]]|apparmor=unconfined|security_opt=\[[^]]*seccomp=unconfined[^]]*|security_opt=\[[^]]*label=disable[^]]*' || true)"
+    weak_lines="$(printf '%s\n' "$inspect_lines" | egrep 'privileged=true|cap_add=\[[^]]|apparmor=unconfined|seccomp=unconfined' || true)"
+    #weak_lines="$(printf '%s\n' "$inspect_lines" | egrep 'privileged=true|cap_add=\[[^]]|apparmor=unconfined|security_opt=\[[^]]*seccomp=unconfined[^]]*|security_opt=\[[^]]*label=disable[^]]*' || true)"
     if [[ -n "${weak_lines}" ]]; then
       if [[ "$status" == "SAFE-ISH" ]]; then
         status="CONTAINER-HARDENING-WEAK"
